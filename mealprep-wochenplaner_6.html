@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prep-Küche – Wochenplaner &amp; Einkaufsliste</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBF8F2;
+  --ink:#351C33;
+  --ink-soft:#6E5F6D;
+  --lime:#A9C520;
+  --lime-deep:#7E9410;
+  --sage:#E8EADC;
+  --line:#DBD5C9;
+  --tomato:#C4452C;
+  --white:#FFFFFF;
+  --r:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px 80px}
+h1,h2,h3,.display{font-family:"Bricolage Grotesque",Inter,sans-serif;letter-spacing:-.02em;margin:0}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+
+/* ---------- Header ---------- */
+header{padding:44px 0 26px}
+.eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--lime-deep);font-weight:600}
+h1{font-size:clamp(34px,6vw,58px);font-weight:800;line-height:.98;margin:10px 0 12px}
+h1 em{font-style:normal;background:linear-gradient(transparent 62%, var(--lime) 62%)}
+.lede{max-width:56ch;color:var(--ink-soft);font-size:16px}
+
+/* ---------- Tabs ---------- */
+.tabs{position:sticky;top:0;z-index:20;background:var(--paper);padding:10px 0 12px;border-bottom:1px solid var(--line);
+      display:flex;gap:6px;flex-wrap:wrap;margin-bottom:26px}
+.tab{border:1px solid var(--line);background:var(--white);color:var(--ink);border-radius:999px;
+     padding:8px 16px;font:inherit;font-weight:600;font-size:14px;cursor:pointer}
+.tab .num{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-soft);margin-left:7px}
+.tab[aria-selected="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tab[aria-selected="true"] .num{color:var(--lime)}
+.tab:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
+
+.panel{display:none}
+.panel.on{display:block}
+
+/* ---------- Generic ---------- */
+h2.sec{font-size:26px;font-weight:800;margin:0 0 4px}
+.sub{color:var(--ink-soft);font-size:14px;margin:0 0 20px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 22px}
+.btn{border:1px solid var(--ink);background:var(--ink);color:#fff;border-radius:10px;padding:10px 16px;
+     font:inherit;font-weight:600;font-size:14px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.lime{background:var(--lime);border-color:var(--lime);color:#22300A}
+.btn:hover{filter:brightness(1.06)}
+.switch{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--ink-soft);cursor:pointer}
+.switch input{width:16px;height:16px;accent-color:var(--lime-deep)}
+.num-in{width:56px;border:1px solid var(--line);border-radius:9px;padding:8px;font:inherit;text-align:center;background:var(--white)}
+.sel-in{border:1px solid var(--line);border-radius:9px;padding:7px 9px;font:inherit;font-size:14px;background:var(--white);color:var(--ink)}
+.swap{font-size:12px;font-weight:600;color:var(--tomato);margin-top:6px}
+.eaters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:22px}
+.eater{border:1px solid var(--line);background:var(--white);border-radius:12px;padding:10px 12px;
+       display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.eater .e-n{border:0;border-bottom:2px solid var(--lime);background:transparent;font:inherit;font-weight:700;
+            font-family:"Bricolage Grotesque",sans-serif;font-size:17px;width:110px;padding:2px 0;color:var(--ink)}
+.wide{width:78px}
+.btn.small{padding:5px 10px;font-size:12px;border-color:var(--line);color:var(--ink-soft)}
+.hint{font-size:13px;color:var(--ink-soft);margin:-12px 0 20px}
+.freeze{font-size:12px;color:var(--lime);margin-top:4px;display:block}
+.pok{color:var(--lime-deep)}
+.plow{color:var(--tomato)}
+.ownform{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:18px;align-items:end}
+.ofield label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin-bottom:5px}
+.ofield input,.ofield select,.ofield textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 10px;font:inherit;background:var(--white);color:var(--ink)}
+.ofield textarea{resize:vertical}
+.row{display:grid;grid-template-columns:2fr 1fr auto auto;gap:10px;align-items:center;margin-bottom:8px}
+.row select,.row input{border:1px solid var(--line);border-radius:9px;padding:8px 10px;font:inherit;background:var(--white)}
+.row .u{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-soft)}
+.row .del{border:1px solid var(--line);background:transparent;border-radius:8px;padding:6px 10px;cursor:pointer;color:var(--tomato)}
+.ownpreview{background:var(--sage);border-radius:var(--r);padding:14px 16px;margin-top:16px;font-family:"JetBrains Mono",monospace;font-size:13px;display:flex;gap:22px;flex-wrap:wrap}
+.ownpreview b{font-size:16px}
+.msg-ok{color:var(--lime-deep);font-weight:600}
+.msg-err{color:var(--tomato);font-weight:600}
+.edit-block summary{color:var(--lime-deep)}
+.erow{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px}
+.erow .en{flex:1;color:var(--ink-soft)}
+.erow .eq{width:72px;border:1px solid var(--line);border-radius:8px;padding:5px 7px;font:inherit}
+.erow .u{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-soft);width:34px}
+.storegrp{margin-bottom:22px}
+.storegrp h3{font-size:15px;font-weight:800;font-family:"Bricolage Grotesque",sans-serif;display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+.storegrp .stotal{font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--ink-soft);font-weight:600}
+.storegrp .snote{font-size:12px;color:var(--ink-soft);margin-bottom:10px}
+.storegrp.marktkauf h3{color:var(--tomato)}
+.storegrp.aldi h3{color:var(--lime-deep)}
+.item .price{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-soft);margin-left:6px;min-width:52px;text-align:right}
+.grandtotal{background:var(--ink);color:#fff;border-radius:var(--r);padding:12px 16px;margin-bottom:18px;
+            display:flex;justify-content:space-between;align-items:center;font-family:"JetBrains Mono",monospace}
+.grandtotal b{color:var(--lime);font-size:18px}
+.card .swap{margin-top:2px;margin-bottom:8px}
+
+/* ---------- Pantry ---------- */
+.cat{margin-bottom:24px}
+.cat h3{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);font-weight:700;
+        display:flex;align-items:center;gap:10px;margin-bottom:11px}
+.cat h3::after{content:"";flex:1;height:1px;background:var(--line)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{border:1px solid var(--line);background:var(--white);border-radius:999px;padding:7px 14px;font:inherit;
+      font-size:14px;cursor:pointer;color:var(--ink);user-select:none}
+.chip[aria-pressed="true"]{background:var(--lime);border-color:var(--lime-deep);color:#22300A;font-weight:600}
+.chip[aria-pressed="true"]::before{content:"✓ ";font-weight:700}
+
+/* ---------- Recipes ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:16px 16px 14px}
+.card h4{font-family:"Bricolage Grotesque",sans-serif;font-size:19px;font-weight:700;margin:0 0 6px;line-height:1.15}
+.meta{display:flex;gap:8px;flex-wrap:wrap;font-size:11px;margin-bottom:10px}
+.tag{background:var(--sage);border-radius:6px;padding:3px 8px;font-weight:600;letter-spacing:.03em}
+.tag.prep{background:var(--lime);color:#22300A}
+.macros{display:flex;gap:14px;font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-soft);
+        border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);padding:8px 0;margin-bottom:10px}
+.macros b{color:var(--ink);font-weight:700}
+.match{font-size:13px;margin-bottom:6px}
+.match .have{color:var(--lime-deep);font-weight:600}
+.miss{font-size:13px;color:var(--tomato)}
+.meter{height:5px;background:var(--sage);border-radius:99px;overflow:hidden;margin:2px 0 10px}
+.meter i{display:block;height:100%;background:var(--lime-deep)}
+.card details{margin-top:8px}
+.card summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--ink-soft)}
+.card ol,.card ul{margin:10px 0 0;padding-left:18px;font-size:14px}
+.card li{margin-bottom:5px}
+
+/* ---------- Plan ---------- */
+.prepbox{background:var(--ink);color:#fff;border-radius:var(--r);padding:18px 20px;margin-bottom:22px}
+.prepbox h3{font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:var(--lime);margin-bottom:12px;font-weight:700}
+.prepday{display:flex;gap:14px;padding:9px 0;border-top:1px solid rgba(255,255,255,.16);font-size:14px}
+.prepday:first-of-type{border-top:0}
+.prepday .d{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--lime);min-width:74px;padding-top:2px}
+.prepday .t{flex:1}
+.prepday .t span{display:block}
+.prepday .t small{color:#C9C0C8}
+
+.day{border:1px solid var(--line);background:var(--white);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.day > .dh{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
+.day > .dh strong{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:700}
+.day > .dh span{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-soft)}
+.slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.slot{border:1px solid var(--line);border-radius:11px;padding:10px;position:relative;background:var(--paper)}
+.slot.cont{background:var(--sage);border-style:dashed}
+.slot .lbl{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);font-weight:700;margin-bottom:6px}
+.slot select{width:100%;border:1px solid var(--line);border-radius:8px;padding:7px;font:inherit;font-size:13px;background:var(--white);color:var(--ink)}
+.slot .kcal{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-soft);margin-top:6px}
+.slot .from{font-size:12px;color:var(--lime-deep);font-weight:600;margin-top:6px}
+.dtotal{margin-top:10px;font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-soft)}
+
+/* ---------- Shopping ---------- */
+.shop-cat{margin-bottom:20px}
+.shop-cat h3{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);font-weight:700;margin-bottom:8px}
+.item{display:flex;align-items:center;gap:12px;background:var(--white);border:1px solid var(--line);
+      border-radius:10px;padding:10px 13px;margin-bottom:6px;cursor:pointer}
+.item input{width:19px;height:19px;accent-color:var(--lime-deep);flex:none;cursor:pointer}
+.item .n{flex:1}
+.item .q{font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:700}
+.item.done{opacity:.42}
+.item.done .n,.item.done .q{text-decoration:line-through}
+.owned{font-size:10px;letter-spacing:.08em;text-transform:uppercase;background:var(--lime);color:#22300A;
+       border-radius:5px;padding:2px 7px;font-weight:700}
+.progress{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin-bottom:20px}
+.progress .meter{height:8px;margin:8px 0 0}
+.empty{background:var(--sage);border-radius:var(--r);padding:26px;text-align:center;color:var(--ink-soft)}
+
+footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-soft)}
+
+@media print{
+  .tabs,header,.bar,footer{display:none!important}
+  body{background:#fff}
+  .item{break-inside:avoid}
+}
+@media (prefers-reduced-motion:no-preference){
+  .chip,.btn,.item{transition:background .15s ease,opacity .15s ease}
+}
+@media (max-width:560px){
+  h1{font-size:34px}
+  .wrap{padding:0 14px 60px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Einmal kochen · zweimal essen</div>
+  <h1>Was im Kühlschrank ist,<br><em>wird zum Wochenplan.</em></h1>
+  <p class="lede">Zutaten anhaken, Woche erzeugen lassen, Einkaufsliste abhaken. Du legst pro Person Kalorien- und Eiweißziel fest, alle Mengen skalieren automatisch mit – und gekocht wird nur alle drei bis vier Tage.</p>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="tab" role="tab" data-p="p1" aria-selected="true">Vorrat<span class="num" id="cnt-have">0</span></button>
+  <button class="tab" role="tab" data-p="p2" aria-selected="false">Rezeptvorschläge<span class="num" id="cnt-rec">0</span></button>
+  <button class="tab" role="tab" data-p="p3" aria-selected="false">Wochenplan</button>
+  <button class="tab" role="tab" data-p="p4" aria-selected="false">Einkaufsliste<span class="num" id="cnt-shop">0</span></button>
+  <button class="tab" role="tab" data-p="p5" aria-selected="false">Eigenes Rezept</button>
+</nav>
+
+<!-- ================= VORRAT ================= -->
+<section class="panel on" id="p1">
+  <h2 class="sec">Was hast du da?</h2>
+  <p class="sub">Alles anhaken, was zu Hause ist. Je mehr du markierst, desto besser passen die Vorschläge – Pflicht ist nichts.</p>
+  <div class="bar">
+    <button class="btn ghost" id="clear-have">Auswahl zurücksetzen</button>
+    <label class="switch"><input type="checkbox" id="basics" checked> Gewürze, Öl &amp; Salz habe ich immer</label>
+  </div>
+  <div id="pantry"></div>
+</section>
+
+<!-- ================= REZEPTE ================= -->
+<section class="panel" id="p2">
+  <h2 class="sec">Passende Rezepte</h2>
+  <p class="sub">Sortiert danach, wie viel du davon schon im Haus hast. Alle Mengen gelten pro Portion.</p>
+  <div class="bar">
+    <label class="switch"><input type="checkbox" id="only-cook"> Nur zeigen, was ich fast komplett da habe</label>
+    <label class="switch"><input type="checkbox" id="only-prep"> Nur Meal-Prep-taugliches</label>
+  </div>
+  <div class="grid" id="recipes"></div>
+</section>
+
+<!-- ================= PLAN ================= -->
+<section class="panel" id="p3">
+  <h2 class="sec">Deine Woche</h2>
+  <p class="sub">Die Kochtage stehen oben, inklusive fertig hochgerechneter Kochmengen. Jeder Slot lässt sich tauschen – der ganze Block zieht mit.</p>
+  <div class="bar">
+    <button class="btn lime" id="gen">Woche neu erzeugen</button>
+    <label class="switch">Gekocht wird
+      <select id="blocklen" class="sel-in">
+        <option value="2">alle 2 Tage</option>
+        <option value="3" selected>alle 3 Tage</option>
+        <option value="4">alle 4 Tage</option>
+      </select></label>
+    <label class="switch"><input type="checkbox" id="samemeal" checked> Mittag &amp; Abend gleich</label>
+    <label class="switch"><input type="checkbox" id="use-snack" checked> Snack einplanen</label>
+    <label class="switch"><input type="checkbox" id="skipfish"> Fischgerichte weglassen</label>
+    <label class="switch">Fisch-Ersatz
+      <select id="altprot" class="sel-in"><option value="haehnchen">Hähnchenbrust</option><option value="pute">Putenbrust</option></select></label>
+  </div>
+  <div id="eaters"></div>
+  <div id="prepbox"></div>
+  <div id="plan"></div>
+</section>
+
+<!-- ================= EINKAUF ================= -->
+<section class="panel" id="p4">
+  <h2 class="sec">Einkaufsliste</h2>
+  <p class="sub">Summiert aus dem Wochenplan, für die eingestellte Personenzahl. Antippen hakt ab.</p>
+  <div class="bar">
+    <button class="btn ghost" id="reset-check">Haken zurücksetzen</button>
+    <button class="btn ghost" id="print">Liste drucken</button>
+    <label class="switch"><input type="checkbox" id="hide-owned"> Vorhandenes ausblenden</label>
+    <label class="switch"><input type="checkbox" id="by-store" checked> Nach Aldi / Marktkauf sortieren</label>
+  </div>
+  <div id="shop"></div>
+</section>
+
+<!-- ================= EIGENES REZEPT ================= -->
+<section class="panel" id="p5">
+  <h2 class="sec">Eigenes Rezept anlegen</h2>
+  <p class="sub">Zutaten aus der Liste wählen und Menge eintragen – Kalorien, Eiweiß, Kohlenhydrate und Fett pro Portion werden automatisch berechnet und das Rezept steht danach überall zur Auswahl (Rezeptliste, Wochenplan, Einkaufsliste).</p>
+
+  <div class="ownform">
+    <div class="ofield"><label>Name des Gerichts</label><input type="text" id="own-name" placeholder="z. B. Linsen-Bolognese"></div>
+    <div class="ofield"><label>Kategorie</label>
+      <select id="own-type"><option value="main">Hauptgericht</option><option value="break">Frühstück</option><option value="snack">Snack</option></select></div>
+    <div class="ofield"><label>Kochzeit (Min.)</label><input type="number" id="own-min" value="30" min="5" max="180"></div>
+    <div class="ofield"><label>Ergibt Portionen</label><input type="number" id="own-port" value="4" min="1" max="12"></div>
+    <label class="switch" style="margin-top:22px"><input type="checkbox" id="own-prep" checked> Meal-Prep-tauglich (hält 2–3 Tage)</label>
+  </div>
+
+  <div id="own-rows"></div>
+  <button class="btn ghost" id="own-add-row" type="button">+ Zutat</button>
+
+  <div class="ofield" style="margin-top:18px"><label>Zubereitung (ein Schritt pro Zeile)</label>
+    <textarea id="own-steps" rows="4" placeholder="Zwiebeln anbraten...&#10;Linsen zugeben...&#10;20 Min köcheln lassen"></textarea></div>
+
+  <div class="ownpreview" id="own-preview"></div>
+
+  <div class="bar" style="margin-top:16px">
+    <button class="btn lime" id="own-save">Rezept berechnen &amp; hinzufügen</button>
+    <span id="own-msg" class="hint" style="margin:0"></span>
+  </div>
+
+  <h3 style="margin-top:34px;font-size:16px">Bereits hinzugefügt</h3>
+  <div id="own-list" class="grid"></div>
+</section>
+
+<footer>Nährwerte sind gerundete Richtwerte pro Portion. Gekochtes hält sich im Kühlschrank 2–3 Tage – zügig abkühlen und luftdicht verschließen.</footer>
+</div>
+
+<script>
+/* ============ ZUTATEN ============ */
+const CATS = {protein:"Protein", carbs:"Sättigung", veg:"Obst & Gemüse", dairy:"Kühlregal", pantry:"Vorrat", spice:"Basics"};
+const I = [
+ ["haehnchen","Hähnchenbrust","protein","g"],["pute","Putenbrust","protein","g"],
+ ["hack","Rinderhack (mager)","protein","g"],["lachs","Lachsfilet","protein","g"],
+ ["kabeljau","Kabeljaufilet","protein","g"],["thunfisch","Thunfisch (Dose)","protein","g"],
+ ["garnelen","Garnelen","protein","g"],["eier","Eier","protein","Stk"],
+ ["magerquark","Magerquark","protein","g"],["skyr","Skyr","protein","g"],
+ ["huettenkaese","Hüttenkäse","protein","g"],["tofu","Tofu (fest)","protein","g"],
+ ["kichererbsen","Kichererbsen (Dose)","protein","g"],["linsen","Rote Linsen","protein","g"],
+ ["bohnen","Schwarze Bohnen (Dose)","protein","g"],["whey","Proteinpulver","protein","g"],
+
+ ["reis","Basmatireis","carbs","g"],["nudeln","Vollkornnudeln","carbs","g"],
+ ["hafer","Haferflocken","carbs","g"],["suesskartoffel","Süßkartoffeln","carbs","g"],
+ ["kartoffeln","Kartoffeln","carbs","g"],["quinoa","Quinoa","carbs","g"],
+ ["couscous","Couscous","carbs","g"],["bulgur","Bulgur","carbs","g"],
+ ["wrap","Vollkorn-Wraps","carbs","Stk"],["brot","Vollkornbrot","carbs","Scheiben"],
+
+ ["brokkoli","Brokkoli","veg","g"],["zucchini","Zucchini","veg","g"],
+ ["paprika","Paprika","veg","Stk"],["karotte","Karotten","veg","g"],
+ ["zwiebel","Zwiebeln","veg","Stk"],["knoblauch","Knoblauch","veg","Zehen"],
+ ["kirschtomaten","Kirschtomaten","veg","g"],["gurke","Salatgurke","veg","Stk"],
+ ["spinat","Blattspinat (TK)","veg","g"],["champignons","Champignons","veg","g"],
+ ["fruehlingszwiebel","Frühlingszwiebeln","veg","Stk"],["ingwer","Ingwer","veg","g"],
+ ["zitrone","Zitronen","veg","Stk"],["banane","Bananen","veg","Stk"],
+ ["beeren","Beeren (TK)","veg","g"],
+
+ ["milch","Milch","dairy","ml"],["joghurt","Naturjoghurt","dairy","g"],
+ ["kochcreme","Kochcreme","dairy","ml"],["mozzarella","Mozzarella","dairy","g"],
+ ["frischkaese","Frischkäse","dairy","g"],["feta","Feta","dairy","g"],
+
+ ["passata","Passierte Tomaten","pantry","g"],["tomatenmark","Tomatenmark","pantry","g"],
+ ["kokosmilch","Kokosmilch","pantry","ml"],["currypaste","Currypaste","pantry","g"],
+ ["sojasosse","Sojasoße","pantry","ml"],["erdnussbutter","Erdnussbutter","pantry","g"],
+ ["mandeln","Mandeln / Nüsse","pantry","g"],["honig","Honig","pantry","g"],
+ ["senf","Senf","pantry","g"],["bruehe","Gemüsebrühe","pantry","ml"],
+
+ ["olivenoel","Olivenöl","spice","ml"],["rapsoel","Rapsöl","spice","ml"],
+ ["salz","Salz","spice","TL"],["pfeffer","Pfeffer","spice","TL"],
+ ["paprikapulver","Paprikapulver","spice","TL"],["curry","Currypulver","spice","TL"],
+ ["kreuzkuemmel","Kreuzkümmel","spice","TL"],["chili","Chiliflocken","spice","TL"],
+ ["oregano","Oregano","spice","TL"],["zimt","Zimt","spice","TL"]
+].map(a=>({id:a[0],n:a[1],c:a[2],u:a[3],basic:a[2]==="spice"}));
+const ING = Object.fromEntries(I.map(x=>[x.id,x]));
+
+/* ============ NÄHRWERTE (pro 1 Einheit: g, ml, Stk, Zehe, TL, Scheibe) ============ */
+const NUT = {
+ haehnchen:[1.13,.23,0,.025], pute:[1.04,.24,0,.01], hack:[1.56,.20,0,.08],
+ lachs:[2.08,.20,0,.13], kabeljau:[.82,.18,0,.007], garnelen:[.71,.17,0,.005],
+ thunfisch:[1.16,.26,0,.01], eier:[78,6.5,.5,5.5],
+ magerquark:[.67,.13,.04,.002], skyr:[.63,.11,.04,.002], huettenkaese:[.98,.12,.035,.04],
+ tofu:[1.44,.15,.02,.08], kichererbsen:[1.39,.07,.20,.02], linsen:[3.36,.24,.60,.015],
+ bohnen:[1.09,.08,.16,.005], whey:[3.80,.75,.08,.05],
+ reis:[3.50,.07,.78,.006], nudeln:[3.48,.13,.62,.025], hafer:[3.72,.13,.60,.07],
+ suesskartoffel:[.86,.016,.20,.001], kartoffeln:[.77,.02,.17,.001],
+ quinoa:[3.68,.14,.64,.06], couscous:[3.76,.13,.72,.01], bulgur:[3.42,.12,.76,.01],
+ wrap:[140,4.5,22,3.5], brot:[95,4,16,1.2],
+ brokkoli:[.34,.028,.07,.004], zucchini:[.17,.012,.03,.003], paprika:[40,1.5,7,.4],
+ karotte:[.41,.009,.10,.002], zwiebel:[40,1.1,9,.1], knoblauch:[4,.2,1,0],
+ kirschtomaten:[.18,.009,.039,.002], gurke:[45,1.8,6,.3], spinat:[.23,.029,.036,.004],
+ champignons:[.22,.031,.033,.003], fruehlingszwiebel:[5,.3,1,0], ingwer:[.80,.018,.18,.008],
+ zitrone:[29,1.1,9,.3], banane:[107,1.3,23,.4], beeren:[.50,.008,.11,.004],
+ milch:[.47,.034,.048,.015], joghurt:[.63,.042,.056,.016], kochcreme:[1.55,.025,.04,.14],
+ mozzarella:[2.80,.22,.02,.21], frischkaese:[1.90,.08,.04,.16], feta:[2.64,.17,.04,.21],
+ passata:[.28,.014,.04,.003], tomatenmark:[.82,.043,.15,.005], kokosmilch:[.97,.01,.03,.09],
+ currypaste:[1.10,.02,.08,.08], sojasosse:[.53,.06,.08,0], erdnussbutter:[5.88,.25,.14,.50],
+ mandeln:[5.79,.21,.09,.50], honig:[3.04,.003,.76,0], senf:[.95,.05,.04,.04],
+ bruehe:[.04,.003,.004,.001], olivenoel:[8.84,0,0,1], rapsoel:[8.84,0,0,1],
+ salz:[0,0,0,0], pfeffer:[6,.25,1,.06], paprikapulver:[6,.3,1,.15], curry:[7,.3,1,.3],
+ kreuzkuemmel:[8,.4,1,.5], chili:[6,.25,1,.3], oregano:[5,.2,1,.15], zimt:[6,.1,2,.1]
+};
+function macros(id,q){const n=NUT[id]||[0,0,0,0]; return [n[0]*q,n[1]*q,n[2]*q,n[3]*q];}
+
+/* ============ PREISE (pro 1 Einheit, grobe Richtwerte 2026) — Store: 'aldi' | 'marktkauf' ============ */
+const PRICE = {
+ haehnchen:[.0079,"marktkauf"], pute:[.0099,"marktkauf"], hack:[.0089,"marktkauf"],
+ lachs:[.0200,"marktkauf"], kabeljau:[.0180,"marktkauf"], garnelen:[.0220,"marktkauf"],
+ thunfisch:[.0110,"aldi"], eier:[.25,"aldi"],
+ magerquark:[.0022,"aldi"], skyr:[.0044,"aldi"], huettenkaese:[.0075,"aldi"],
+ tofu:[.0075,"aldi"], kichererbsen:[.0020,"aldi"], linsen:[.0030,"aldi"],
+ bohnen:[.0020,"aldi"], whey:[.0200,"marktkauf"],
+ reis:[.0015,"aldi"], nudeln:[.0022,"aldi"], hafer:[.0013,"aldi"],
+ suesskartoffel:[.0020,"aldi"], kartoffeln:[.0010,"aldi"],
+ quinoa:[.0055,"aldi"], couscous:[.0026,"aldi"], bulgur:[.0026,"aldi"],
+ wrap:[.19,"aldi"], brot:[.09,"aldi"],
+ brokkoli:[.0026,"aldi"], zucchini:[.0015,"aldi"], paprika:[.79,"aldi"],
+ karotte:[.0009,"aldi"], zwiebel:[.10,"aldi"], knoblauch:[.07,"aldi"],
+ kirschtomaten:[.0060,"aldi"], gurke:[.69,"aldi"], spinat:[.0022,"aldi"],
+ champignons:[.0032,"aldi"], fruehlingszwiebel:[.12,"aldi"], ingwer:[.0050,"aldi"],
+ zitrone:[.39,"aldi"], banane:[.18,"aldi"], beeren:[.0062,"aldi"],
+ milch:[.0011,"aldi"], joghurt:[.0018,"aldi"], kochcreme:[.0045,"aldi"],
+ mozzarella:[.0071,"aldi"], frischkaese:[.0050,"aldi"], feta:[.0100,"marktkauf"],
+ passata:[.0011,"aldi"], tomatenmark:[.0030,"aldi"], kokosmilch:[.0025,"aldi"],
+ currypaste:[.0100,"marktkauf"], sojasosse:[.0052,"marktkauf"], erdnussbutter:[.0071,"aldi"],
+ mandeln:[.0125,"aldi"], honig:[.0070,"aldi"], senf:[.0036,"aldi"],
+ bruehe:[.0013,"aldi"], olivenoel:[.0100,"marktkauf"], rapsoel:[.0020,"aldi"],
+ salz:[.005,"aldi"], pfeffer:[.03,"aldi"], paprikapulver:[.03,"aldi"], curry:[.03,"aldi"],
+ kreuzkuemmel:[.03,"aldi"], chili:[.02,"aldi"], oregano:[.03,"aldi"], zimt:[.03,"aldi"]
+};
+function priceOf(id,q){const p=PRICE[id]; return p?p[0]*q:0;}
+function euro(n){return n.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";}
+
+
+
+/* ============ REZEPTE (Mengen pro Portion) ============ */
+const R = [
+{id:1,n:"Hähnchen-Brokkoli-Bowl mit Reis",t:"main",prep:1,min:30,k:615,p:48,c:70,f:13,
+ i:[["haehnchen",180],["reis",75],["brokkoli",200],["karotte",60],["zwiebel",.5],["knoblauch",1],["sojasosse",15],["rapsoel",8],["salz",.5],["pfeffer",.5]],
+ s:["Reis nach Packung garen.","Hähnchen in Streifen schneiden, in heißem Öl 5–6 Min. scharf anbraten, herausnehmen.","Zwiebel, Knoblauch, Karotte anbraten, Brokkoli zugeben, 6 Min. mit Deckel dünsten.","Hähnchen zurück in die Pfanne, mit Sojasoße ablöschen, abschmecken.","Reis und Pfanne getrennt in die Boxen – bleibt bissfester."]},
+{id:2,n:"Bolognese mit Vollkornnudeln",t:"main",prep:1,min:40,k:655,p:45,c:72,f:18,
+ i:[["hack",150],["nudeln",90],["passata",200],["zwiebel",.5],["knoblauch",1],["karotte",60],["tomatenmark",15],["olivenoel",8],["oregano",1],["salz",.5],["pfeffer",.5]],
+ s:["Zwiebel, Knoblauch, Karotte fein würfeln und in Öl andünsten.","Hack zugeben, krümelig braun braten.","Tomatenmark kurz mitrösten, mit Passata ablöschen, 20 Min. leise köcheln.","Nudeln sehr bissfest kochen – sie ziehen in der Box nach.","Getrennt abfüllen."]},
+{id:3,n:"Lachs mit Süßkartoffel & Brokkoli",t:"main",prep:1,min:35,k:620,p:40,c:46,f:26,
+ i:[["lachs",160],["suesskartoffel",250],["brokkoli",150],["olivenoel",10],["zitrone",.5],["knoblauch",1],["salz",.5],["pfeffer",.5]],
+ s:["Ofen auf 200 °C vorheizen.","Süßkartoffelwürfel mit Öl, Salz, Pfeffer mischen, 25 Min. backen.","Nach 15 Min. Brokkoli und Lachs mit auf das Blech.","Mit Zitrone beträufeln.","Lachs am zweiten Tag lieber kalt essen oder nur kurz erwärmen."]},
+{id:4,n:"Putengeschnetzeltes mit Paprika & Reis",t:"main",prep:1,min:30,k:600,p:47,c:68,f:12,
+ i:[["pute",180],["reis",75],["paprika",1],["zwiebel",.5],["kochcreme",30],["rapsoel",8],["paprikapulver",1],["salz",.5],["pfeffer",.5]],
+ s:["Reis aufsetzen.","Pute in Streifen scharf anbraten, herausnehmen.","Zwiebel und Paprika 5 Min. braten, mit Paprikapulver würzen.","Kochcreme angießen, Fleisch zurückgeben, kurz durchziehen lassen."]},
+{id:5,n:"Rotes Linsen-Curry mit Reis",t:"main",prep:1,min:30,k:590,p:26,c:78,f:18,
+ i:[["linsen",90],["reis",60],["kokosmilch",80],["passata",150],["zwiebel",.5],["knoblauch",1],["ingwer",5],["currypaste",15],["bruehe",200],["curry",1],["salz",.5]],
+ s:["Zwiebel, Knoblauch, Ingwer anschwitzen, Currypaste mitrösten.","Linsen, Passata, Brühe zugeben, 15 Min. köcheln.","Kokosmilch einrühren, abschmecken.","Wird über Nacht dicker – am zweiten Tag mit einem Schuss Wasser aufrühren."]},
+{id:6,n:"Kichererbsen-Curry mit Spinat",t:"main",prep:1,min:25,k:560,p:24,c:68,f:18,
+ i:[["kichererbsen",150],["reis",65],["spinat",100],["kokosmilch",80],["passata",100],["zwiebel",.5],["knoblauch",1],["currypaste",12],["kreuzkuemmel",1],["salz",.5]],
+ s:["Zwiebel und Knoblauch anbraten, Currypaste und Kreuzkümmel kurz mitrösten.","Kichererbsen und Passata zugeben, 10 Min. köcheln.","Spinat und Kokosmilch unterrühren, abschmecken.","Mit Reis servieren."]},
+{id:7,n:"Chili con Carne",t:"main",prep:1,min:40,k:590,p:42,c:58,f:16,
+ i:[["hack",140],["bohnen",150],["passata",200],["reis",50],["paprika",.5],["zwiebel",.5],["knoblauch",1],["kreuzkuemmel",1],["chili",.5],["olivenoel",8],["salz",.5]],
+ s:["Zwiebel, Knoblauch, Paprika anbraten.","Hack zugeben und krümelig braten, Gewürze mitrösten.","Bohnen und Passata zugeben, 25 Min. köcheln.","Mit Reis abfüllen – schmeckt am zweiten Tag besser."]},
+{id:8,n:"Ofengemüse mit Feta & Quinoa",t:"main",prep:1,min:35,k:585,p:24,c:62,f:24,
+ i:[["quinoa",75],["zucchini",150],["paprika",1],["kirschtomaten",100],["zwiebel",.5],["feta",50],["olivenoel",12],["oregano",1],["salz",.5],["pfeffer",.5]],
+ s:["Ofen auf 200 °C vorheizen.","Gemüse grob schneiden, mit Öl und Gewürzen mischen, 25 Min. backen.","Quinoa in Salzwasser 12 Min. garen.","Feta in den letzten 5 Min. über das Gemüse bröseln."]},
+{id:9,n:"Asia-Nudelpfanne mit Tofu & Erdnusssoße",t:"main",prep:1,min:30,k:640,p:32,c:70,f:26,
+ i:[["tofu",150],["nudeln",80],["paprika",.5],["karotte",80],["fruehlingszwiebel",1],["erdnussbutter",20],["sojasosse",20],["ingwer",5],["knoblauch",1],["rapsoel",8],["chili",.5]],
+ s:["Tofu trocken tupfen, würfeln und rundum knusprig braten.","Gemüse in feine Streifen schneiden und 4 Min. anbraten.","Erdnussbutter, Sojasoße, Ingwer, Knoblauch und 60 ml Wasser verrühren, angießen.","Gekochte Nudeln unterheben, mit Frühlingszwiebeln bestreuen."]},
+{id:10,n:"Thunfisch-Nudelsalat",t:"main",prep:1,min:20,k:560,p:42,c:62,f:14,
+ i:[["thunfisch",150],["nudeln",85],["kirschtomaten",100],["gurke",.3],["zwiebel",.3],["joghurt",60],["senf",8],["zitrone",.3],["olivenoel",6],["salz",.5],["pfeffer",.5]],
+ s:["Nudeln kochen, kalt abschrecken.","Gemüse klein schneiden, Thunfisch abtropfen lassen.","Joghurt, Senf, Zitrone, Öl zu einem Dressing rühren.","Alles mischen – hält kalt problemlos drei Tage."]},
+{id:11,n:"Kabeljau mit Kartoffeln & Kräuterquark",t:"main",prep:0,min:30,k:540,p:48,c:50,f:12,
+ i:[["kabeljau",180],["kartoffeln",280],["magerquark",100],["zitrone",.3],["knoblauch",1],["olivenoel",8],["fruehlingszwiebel",1],["salz",.5],["pfeffer",.5]],
+ s:["Kartoffeln in Salzwasser garen.","Kabeljau salzen, in Öl 3 Min. pro Seite braten.","Quark mit Zitrone, Knoblauch, Frühlingszwiebeln und etwas Wasser glatt rühren.","Frisch essen – Fisch verliert am zweiten Tag deutlich."]},
+{id:12,n:"Hähnchen-Wrap mit Joghurtdip",t:"main",prep:1,min:20,k:575,p:45,c:55,f:18,
+ i:[["haehnchen",150],["wrap",2],["joghurt",60],["gurke",.3],["kirschtomaten",60],["paprika",.5],["senf",6],["paprikapulver",1],["rapsoel",6],["salz",.5]],
+ s:["Hähnchen würzen, anbraten und in Streifen schneiden.","Joghurt mit Senf, Salz und Pfeffer verrühren.","Wraps mit Dip bestreichen, Gemüse und Hähnchen einrollen.","Fest in Folie wickeln – das hält die Rolle zusammen."]},
+{id:13,n:"Mediterrane Bulgur-Hähnchen-Pfanne",t:"main",prep:1,min:30,k:610,p:46,c:68,f:16,
+ i:[["haehnchen",170],["bulgur",80],["zucchini",120],["kirschtomaten",100],["zwiebel",.5],["knoblauch",1],["olivenoel",10],["oregano",1],["zitrone",.3],["salz",.5]],
+ s:["Bulgur mit kochender Brühe übergießen und 12 Min. quellen lassen.","Hähnchenwürfel scharf anbraten, herausnehmen.","Zwiebel, Knoblauch, Zucchini anbraten, Tomaten zugeben.","Alles mit Bulgur mischen, mit Zitrone und Oregano abschmecken."]},
+{id:14,n:"Garnelen-Zucchini-Pfanne mit Reis",t:"main",prep:0,min:25,k:540,p:38,c:62,f:12,
+ i:[["garnelen",170],["reis",70],["zucchini",150],["kirschtomaten",80],["knoblauch",2],["olivenoel",10],["chili",.5],["zitrone",.3],["salz",.5]],
+ s:["Reis garen.","Knoblauch und Chili in Öl anschwitzen, Zucchini 4 Min. braten.","Garnelen zugeben, 3 Min. braten, Tomaten unterheben.","Mit Zitrone abschmecken."]},
+{id:15,n:"Süßkartoffel-Hack-Auflauf",t:"main",prep:1,min:50,k:640,p:42,c:58,f:22,
+ i:[["hack",150],["suesskartoffel",250],["passata",150],["zwiebel",.5],["knoblauch",1],["mozzarella",40],["paprikapulver",1],["olivenoel",8],["salz",.5],["pfeffer",.5]],
+ s:["Ofen auf 200 °C vorheizen.","Süßkartoffeln in dünne Scheiben schneiden.","Hack mit Zwiebel und Knoblauch anbraten, Passata zugeben, würzen.","Abwechselnd schichten, Mozzarella darüber, 30 Min. backen.","Perfekter Prep-Kandidat: einmal backen, portionsweise erwärmen."]},
+{id:16,n:"Couscous-Salat mit Feta & Kichererbsen",t:"main",prep:1,min:20,k:590,p:22,c:72,f:22,
+ i:[["couscous",80],["kichererbsen",120],["kirschtomaten",100],["gurke",.4],["feta",50],["zitrone",.3],["olivenoel",12],["fruehlingszwiebel",1],["salz",.5],["pfeffer",.5]],
+ s:["Couscous mit gleicher Menge kochender Brühe übergießen, 8 Min. quellen lassen, auflockern.","Gemüse würfeln, Kichererbsen abspülen.","Alles mit Öl, Zitrone, Salz und Pfeffer mischen, Feta zerbröseln.","Schmeckt kalt am besten."]},
+{id:17,n:"Pilz-Hähnchen-Pfanne mit Kartoffeln",t:"main",prep:1,min:35,k:585,p:46,c:52,f:18,
+ i:[["haehnchen",170],["kartoffeln",250],["champignons",150],["zwiebel",.5],["kochcreme",30],["olivenoel",8],["salz",.5],["pfeffer",.5]],
+ s:["Kartoffeln würfeln und in Salzwasser 10 Min. vorkochen, dann in der Pfanne anbraten.","Hähnchen anbraten, herausnehmen.","Champignons und Zwiebeln braten, bis die Flüssigkeit verdampft ist.","Kochcreme zugeben, alles vermengen und abschmecken."]},
+
+{id:20,n:"Overnight Oats mit Beeren & Skyr",t:"break",prep:1,min:5,k:470,p:32,c:52,f:12,
+ i:[["hafer",60],["skyr",150],["milch",100],["beeren",80],["mandeln",15],["honig",8],["zimt",.5]],
+ s:["Hafer, Skyr, Milch und Zimt verrühren.","Beeren unterheben, über Nacht kalt stellen.","Morgens Nüsse und Honig darüber.","Lässt sich für drei Gläser gleichzeitig ansetzen."]},
+{id:21,n:"Protein-Porridge Banane-Zimt",t:"break",prep:0,min:10,k:480,p:33,c:58,f:11,
+ i:[["hafer",70],["milch",200],["whey",25],["banane",1],["zimt",.5],["mandeln",10]],
+ s:["Hafer mit Milch aufkochen, 4 Min. quellen lassen.","Vom Herd nehmen, kurz abkühlen, dann Proteinpulver einrühren.","Banane und Nüsse darauf."]},
+{id:22,n:"Rührei-Wrap mit Spinat",t:"break",prep:0,min:12,k:460,p:32,c:34,f:20,
+ i:[["eier",3],["wrap",1],["spinat",80],["frischkaese",30],["zwiebel",.3],["rapsoel",6],["salz",.5],["pfeffer",.5]],
+ s:["Zwiebel andünsten, Spinat zugeben und Flüssigkeit verdampfen lassen.","Eier verquirlen, angießen und stocken lassen.","Wrap mit Frischkäse bestreichen, füllen, rollen."]},
+{id:23,n:"Magerquark-Bowl mit Beeren & Nüssen",t:"break",prep:1,min:5,k:420,p:40,c:34,f:13,
+ i:[["magerquark",250],["beeren",100],["hafer",25],["mandeln",15],["honig",8]],
+ s:["Quark mit einem Schuss Wasser cremig rühren.","Beeren, Hafer, Nüsse und Honig darüber."]},
+{id:24,n:"Hüttenkäse-Brot mit Ei & Tomate",t:"break",prep:0,min:10,k:445,p:35,c:38,f:16,
+ i:[["brot",2],["huettenkaese",120],["eier",2],["kirschtomaten",80],["pfeffer",.5],["salz",.5]],
+ s:["Eier 7 Min. kochen, abschrecken, pellen.","Brot mit Hüttenkäse bestreichen.","Ei und Tomaten darauf, kräftig pfeffern."]},
+
+{id:30,n:"Protein-Pancakes",t:"snack",prep:1,min:15,k:380,p:32,c:40,f:9,
+ i:[["hafer",50],["eier",2],["whey",20],["banane",1],["zimt",.5],["rapsoel",4]],
+ s:["Alles im Mixer zu einem glatten Teig verarbeiten.","In wenig Öl bei mittlerer Hitze kleine Pancakes backen.","Kalt genauso gut – ideal für die Box."]},
+{id:31,n:"Skyr mit Erdnussbutter & Banane",t:"snack",prep:0,min:3,k:340,p:28,c:34,f:11,
+ i:[["skyr",200],["erdnussbutter",15],["banane",1],["zimt",.5]],
+ s:["Skyr in die Schale, Erdnussbutter darüber.","Banane in Scheiben, Zimt drüber."]},
+{id:32,n:"Quark-Dip mit Gemüsesticks",t:"snack",prep:1,min:8,k:250,p:26,c:16,f:8,
+ i:[["magerquark",200],["karotte",100],["gurke",.4],["paprika",.5],["knoblauch",1],["salz",.5],["pfeffer",.5]],
+ s:["Quark mit Knoblauch, Salz, Pfeffer und etwas Wasser cremig rühren.","Gemüse in Sticks schneiden."]}
+];
+const RM = Object.fromEntries(R.map(r=>[r.id,r]));
+const CUSTOM=[];
+function ALLR(){return R.concat(CUSTOM);}
+const DAYS=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"];
+
+/* ============ STATE ============ */
+const FISH=new Set(["lachs","kabeljau","garnelen","thunfisch"]);
+const hasFish=r=>r.i.some(([id])=>FISH.has(id));
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+let uid=3;
+const S={have:new Set(),basics:true,plan:null,checked:new Set(),
+         snack:true,skipFish:false,alt:"pute",blockLen:3,sameMeal:true,
+         eaters:[{id:1,n:"Du",kcal:2900,pz:210,fish:true},{id:2,n:"Sie",kcal:2050,pz:110,fish:false}]};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+
+/* ============ TABS ============ */
+$$(".tab").forEach(t=>t.onclick=()=>{
+  $$(".tab").forEach(x=>x.setAttribute("aria-selected",x===t));
+  $$(".panel").forEach(p=>p.classList.toggle("on",p.id===t.dataset.p));
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+
+/* ============ VORRAT ============ */
+function renderPantry(){
+  const box=$("#pantry"); box.innerHTML="";
+  for(const [key,label] of Object.entries(CATS)){
+    const list=I.filter(x=>x.c===key); if(!list.length) continue;
+    const d=document.createElement("div"); d.className="cat";
+    d.innerHTML=`<h3>${label}</h3>`;
+    const c=document.createElement("div"); c.className="chips";
+    list.forEach(x=>{
+      const b=document.createElement("button");
+      b.className="chip"; b.type="button"; b.textContent=x.n;
+      b.setAttribute("aria-pressed",S.have.has(x.id));
+      b.onclick=()=>{S.have.has(x.id)?S.have.delete(x.id):S.have.add(x.id);
+        b.setAttribute("aria-pressed",S.have.has(x.id)); refresh();};
+      c.appendChild(b);
+    });
+    d.appendChild(c); box.appendChild(d);
+  }
+}
+$("#clear-have").onclick=()=>{S.have.clear();renderPantry();refresh();};
+$("#basics").onchange=e=>{S.basics=e.target.checked;refresh();};
+
+/* ============ MATCHING ============ */
+const relevant=r=>r.i.filter(([id])=>!(S.basics&&ING[id].basic));
+function score(r){const rel=relevant(r); if(!rel.length) return 1;
+  return rel.filter(([id])=>S.have.has(id)).length/rel.length;}
+const missing=r=>relevant(r).filter(([id])=>!S.have.has(id)).map(([id])=>ING[id].n);
+const fishNames=r=>r.i.filter(([id])=>FISH.has(id)).map(([id])=>ING[id].n).join(", ");
+const anyNoFish=()=>S.eaters.some(e=>!e.fish);
+
+/* ============ MENGEN-FORMAT ============ */
+function round2(q){const v=Math.round(q*100)/100; return v;}
+function fmt(q,u){
+  if(u==="g"||u==="ml"){
+    if(q>=1000) return (Math.round(q/100)/10).toString().replace(".",",")+(u==="g"?" kg":" l");
+    return Math.round(q/5)*5+" "+u;
+  }
+  const v=Math.round(q*10)/10;
+  return (Number.isInteger(v)?v:v.toString().replace(".",","))+" "+u;
+}
+const de=n=>Math.round(n).toLocaleString("de-DE");
+
+/* ============ REZEPTE ============ */
+function renderRecipes(){
+  const onlyC=$("#only-cook").checked, onlyP=$("#only-prep").checked;
+  let list=ALLR().map(r=>({r,sc:score(r)})).sort((a,b)=>b.sc-a.sc);
+  if(onlyP) list=list.filter(x=>x.r.prep);
+  if(onlyC) list=list.filter(x=>x.sc>=.75);
+  const box=$("#recipes"); box.innerHTML="";
+  $("#cnt-rec").textContent=list.length;
+  if(!list.length){box.innerHTML='<div class="empty">Keine Treffer mit diesen Filtern. Hak im Vorrat mehr Zutaten an oder nimm einen Filter raus.</div>';return;}
+  const T={main:"Hauptgericht",break:"Frühstück",snack:"Snack"};
+  list.forEach(({r,sc})=>{
+    const rel=relevant(r), haveN=rel.filter(([id])=>S.have.has(id)).length, miss=missing(r);
+    const el=document.createElement("article"); el.className="card";
+    el.innerHTML=`
+      <h4>${r.n}</h4>
+      <div class="meta"><span class="tag">${T[r.t]}</span>${r.prep?'<span class="tag prep">Prep-tauglich</span>':''}<span class="tag">${r.min} Min</span></div>
+      <div class="macros"><span><b>${r.k}</b> kcal</span><span>P <b>${r.p}</b></span><span>KH <b>${r.c}</b></span><span>F <b>${r.f}</b></span></div>
+      <div class="match"><span class="have">${haveN} von ${rel.length}</span> Zutaten im Vorrat</div>
+      <div class="meter"><i style="width:${Math.round(sc*100)}%"></i></div>
+      ${miss.length?`<div class="miss">Fehlt: ${miss.join(", ")}</div>`:'<div class="match">Kannst du sofort kochen.</div>'}
+      ${anyNoFish()&&hasFish(r)?`<div class="swap">Ohne Fisch: ${fishNames(r)} durch ${ING[S.alt].n} ersetzen – gleiche Menge, gleiche Garzeit.</div>`:""}
+      <details><summary>Zutaten für 4 Portionen (2 Tage, 2 Personen)</summary>
+        <ul>${r.i.map(([id,q])=>`<li>${fmt(q*4,ING[id].u)} ${ING[id].n}</li>`).join("")}</ul>
+        <p class="hint" style="margin:8px 0 0">Menge pro Standardportion: ${r.i.map(([id,q])=>`${fmt(q,ING[id].u)} ${ING[id].n}`).join(", ")}.</p>
+      </details>
+      <details><summary>Zubereitung</summary>
+        <ol>${r.s.map(s=>`<li>${s}</li>`).join("")}</ol>
+      </details>
+      <details class="edit-block"><summary>Mengen pro Portion bearbeiten</summary>
+        <div class="edit-rows" data-rid="${r.id}">
+          ${r.i.map(([id,q],ix)=>`<div class="erow" data-ix="${ix}">
+            <span class="en">${ING[id].n}</span>
+            <input type="number" class="eq" value="${round2(q)}" min="0" step="1">
+            <span class="u">${ING[id].u}</span>
+          </div>`).join("")}
+        </div>
+        <button class="btn ghost small edit-save" data-rid="${r.id}" type="button" style="margin-top:8px">Änderungen speichern</button>
+      </details>`;
+    box.appendChild(el);
+  });
+  box.querySelectorAll(".edit-save").forEach(btn=>btn.onclick=()=>{
+    const rid=btn.dataset.rid;
+    const r=RM[rid] || ALLR().find(x=>String(x.id)===String(rid));
+    if(!r) return;
+    const rows=[...btn.parentElement.querySelectorAll(".erow")];
+    const newI=rows.map((row,ix)=>{
+      const id=r.i[ix][0];
+      const q=Math.max(0,+row.querySelector(".eq").value||0);
+      return [id,q];
+    });
+    r.i=newI;
+    let k=0,p=0,c=0,f=0;
+    newI.forEach(([id,q])=>{const m=macros(id,q); k+=m[0];p+=m[1];c+=m[2];f+=m[3];});
+    r.k=Math.round(k); r.p=Math.round(p); r.c=Math.round(c); r.f=Math.round(f);
+    renderRecipes(); renderPlan(); renderShop();
+  });
+}
+$("#only-cook").onchange=renderRecipes; $("#only-prep").onchange=renderRecipes;
+
+/* ============ ESSER ============ */
+function renderEaters(){
+  const box=$("#eaters");
+  box.innerHTML=`<div class="eaters">`+S.eaters.map(e=>`
+    <div class="eater" data-id="${e.id}">
+      <input type="text" class="e-n" value="${e.n}" aria-label="Name">
+      <label class="switch">kcal/Tag <input type="number" class="e-k num-in wide" value="${e.kcal}" min="1200" max="6000" step="50"></label>
+      <label class="switch">Eiweiß/Tag <input type="number" class="e-p num-in wide" value="${e.pz}" min="40" max="350" step="5"></label>
+      <label class="switch"><input type="checkbox" class="e-f" ${e.fish?"":"checked"}> kein Fisch</label>
+      ${S.eaters.length>1?'<button class="btn ghost small e-x" type="button">Entfernen</button>':""}
+    </div>`).join("")+`<button class="btn ghost" id="add-eater" type="button">+ Esser</button></div>
+    <p class="hint">Portionen werden pro Person auf das kcal-Ziel hochgerechnet. Der Wochenplan pr\u00fcft dabei, ob das Eiwei\u00dfziel erreicht wird – die Einkaufsliste kauft passend dazu ein.</p>`;
+  box.querySelectorAll(".eater").forEach(row=>{
+    const e=S.eaters.find(x=>x.id===+row.dataset.id);
+    row.querySelector(".e-n").onchange=ev=>{e.n=ev.target.value.trim()||"Esser";renderPlan();};
+    row.querySelector(".e-k").onchange=ev=>{e.kcal=clamp(+ev.target.value||2000,1200,6000);renderPlan();renderShop();};
+    row.querySelector(".e-p").onchange=ev=>{e.pz=clamp(+ev.target.value||100,40,350);renderPlan();};
+    row.querySelector(".e-f").onchange=ev=>{e.fish=!ev.target.checked;renderRecipes();renderPlan();renderShop();};
+    const x=row.querySelector(".e-x");
+    if(x) x.onclick=()=>{S.eaters=S.eaters.filter(y=>y.id!==e.id);renderEaters();renderPlan();renderShop();};
+  });
+  $("#add-eater").onclick=()=>{S.eaters.push({id:uid++,n:"Esser",kcal:2200,pz:110,fish:true});renderEaters();renderPlan();renderShop();};
+}
+
+/* ============ PLAN ============ */
+function blocksOf(len){const out=[];for(let d=0;d<7;d+=len){const b=[];for(let i=0;i<len&&d+i<7;i++)b.push(d+i);out.push(b);}return out;}
+function pick(pool,n,exclude=new Set()){
+  const cand=pool.filter(r=>!exclude.has(r.id))
+    .map(r=>({r,v:score(r)-Math.random()*.25}))
+    .sort((a,b)=>b.v-a.v).map(x=>x.r);
+  const out=[];
+  for(const r of cand){ if(out.length>=n) break; out.push(r); }
+  let k=0; while(out.length<n && pool.length){ out.push(pool[k%pool.length]); k++; }
+  return out;
+}
+function generate(){
+  const mains=ALLR().filter(r=>r.t==="main" && !(S.skipFish && hasFish(r)));
+  const prepMains=mains.filter(r=>r.prep);
+  const brk=ALLR().filter(r=>r.t==="break"), sn=ALLR().filter(r=>r.t==="snack");
+  const B=blocksOf(S.blockLen);
+  const pool=S.blockLen>=3?(prepMains.length>=B.length?prepMains:mains):mains;
+  const lunch=pick(pool,B.length);
+  const dinner=S.sameMeal?lunch:pick(mains,B.length,new Set(lunch.map(r=>r.id)));
+  const bf=pick(brk,B.length), snk=pick(sn,B.length);
+  const plan=DAYS.map(()=>({}));
+  B.forEach((b,i)=>b.forEach(d=>{
+    plan[d].m=lunch[i].id; plan[d].a=dinner[i].id;
+    plan[d].f=bf[i].id;    plan[d].s=snk[i].id;
+  }));
+  S.plan=plan; S.checked.clear();
+  renderPlan(); renderShop();
+}
+function dayKeys(){return S.sameMeal?["f","m","a",...(S.snack?["s"]:[])]:["f","m","a",...(S.snack?["s"]:[])];}
+function dayBase(d){let k=0,p=0;dayKeys().forEach(x=>{const r=RM[S.plan[d][x]];if(r){k+=r.k;p+=r.p;}});return{k:k||1,p};}
+function factors(d){const b=dayBase(d).k;return S.eaters.map(e=>({e,f:clamp(e.kcal/b,.5,3)}));}
+function runs(slot){
+  const out=[];
+  for(let d=0;d<7;d++){
+    const id=S.plan[d][slot];
+    if(d>0 && S.plan[d-1][slot]===id) out[out.length-1].len++;
+    else out.push({start:d,len:1,id});
+  }
+  return out;
+}
+function renderPlan(){
+  if(!S.plan) return;
+  const box=$("#plan"); box.innerHTML="";
+  const slots=S.sameMeal?[["f","Frühstück"],["m","Mittag & Abend"]]:[["f","Frühstück"],["m","Mittag"],["a","Abend"]];
+  if(S.snack) slots.push(["s","Snack"]);
+  DAYS.forEach((dn,d)=>{
+    const F=factors(d), base=dayBase(d);
+    const day=document.createElement("div"); day.className="day";
+    const inner=slots.map(([k,lbl])=>{
+      const r=RM[S.plan[d][k]]; if(!r) return "";
+      const cont=d>0 && S.plan[d-1][k]===r.id;
+      const opts=ALLR().filter(x=>x.t===(k==="f"?"break":k==="s"?"snack":"main"))
+        .map(x=>`<option value="${x.id}" ${x.id===r.id?"selected":""}>${x.n}</option>`).join("");
+      const per=F.map(({e,f})=>`${e.n} ${Math.round(r.k*f)} kcal`).join(" · ");
+      return `<div class="slot ${cont?"cont":""}">
+        <div class="lbl">${lbl}${S.sameMeal&&k==="m"?" (2×)":""}</div>
+        <select data-d="${d}" data-k="${k}">${opts}</select>
+        <div class="kcal">${per}</div>
+        ${cont?`<div class="from">Aus dem Prep von ${DAYS[d-1]}</div>`:""}
+        ${anyNoFish()&&hasFish(r)?`<div class="swap">Fischesser + ${ING[S.alt].n} getrennt</div>`:""}
+      </div>`;
+    }).join("");
+    const head=F.map(({e,f})=>{
+      const pr=Math.round(base.p*f), ok=pr>=e.pz;
+      return `${e.n}: ${de(base.k*f)} kcal · <b class="${ok?"pok":"plow"}">${pr} g Eiweiß</b> (Ziel ${e.pz}) · ${f.toFixed(2).replace(".",",")}× Portion`;
+    }).join("  |  ");
+    day.innerHTML=`<div class="dh"><strong>${dn}</strong><span>${head}</span></div>
+      <div class="slots">${inner}</div>`;
+    box.appendChild(day);
+  });
+  box.querySelectorAll("select").forEach(sel=>sel.onchange=()=>{
+    const d=+sel.dataset.d, k=sel.dataset.k, val=+sel.value;
+    const run=runs(k).find(x=>d>=x.start && d<x.start+x.len);
+    for(let i=run.start;i<run.start+run.len;i++){
+      S.plan[i][k]=val;
+      if(S.sameMeal && k==="m") S.plan[i].a=val;
+    }
+    renderPlan(); renderShop();
+  });
+  renderPrepBox();
+}
+function runFactors(run,mult){
+  let fish=0,alt=0;
+  for(let d=run.start;d<run.start+run.len;d++)
+    factors(d).forEach(({e,f})=>{ if(e.fish) fish+=f; else alt+=f; });
+  return {fish:fish*mult,alt:alt*mult};
+}
+function scaledIng(r,fs){
+  const out=[];
+  r.i.forEach(([id,q])=>{
+    if(S.basics && ING[id].basic) return;
+    if(FISH.has(id)){
+      if(fs.fish>0) out.push([ING[id].n,q*fs.fish,ING[id].u]);
+      if(fs.alt>0)  out.push([ING[S.alt].n,q*fs.alt,ING[S.alt].u]);
+    } else out.push([ING[id].n,q*(fs.fish+fs.alt),ING[id].u]);
+  });
+  return out;
+}
+function renderPrepBox(){
+  const sessions={};
+  const slots=S.sameMeal?[["m","Mittag & Abend",2]]:[["m","Mittag",1],["a","Abend",1]];
+  if(S.snack) slots.push(["s","Snack",1]);
+  slots.push(["f","Frühstück",1]);
+  slots.forEach(([k,lbl,mult])=>{
+    runs(k).forEach(run=>{
+      const r=RM[run.id];
+      if(k==="f" && (!r.prep||run.len<2)) return;
+      const fs=runFactors(run,mult);
+      (sessions[run.start] ||= []).push({r,lbl,len:run.len,fs});
+    });
+  });
+  const keys=Object.keys(sessions).map(Number).sort((a,b)=>a-b);
+  $("#prepbox").innerHTML=`<div class="prepbox"><h3>Kochtage</h3>${keys.map(d=>`
+    <div class="prepday"><div class="d">${DAYS[d]}</div><div class="t">
+      ${sessions[d].map(x=>{
+        const port=x.fs.fish+x.fs.alt;
+        return `<span><b>${x.r.n}</b> · ≈ ${Math.round(port)} Standardportionen<br>
+        <small>${x.lbl} · deckt ${x.len===1?"einen Tag":x.len+" Tage"} · ${x.r.min} Min Kochzeit</small>
+        ${x.len>=3?'<small class="freeze">Portionen ab Tag 3 direkt einfrieren.</small>':""}
+        <details><summary>Einkaufs- und Kochmenge für diese Session</summary>
+          <ul>${scaledIng(x.r,x.fs).map(([n,q,u])=>`<li>${fmt(q,u)} ${n}</li>`).join("")}</ul>
+        </details></span>`;}).join("")}
+    </div></div>`).join("")}</div>`;
+}
+$("#gen").onclick=generate;
+$("#blocklen").onchange=e=>{S.blockLen=+e.target.value;generate();};
+$("#samemeal").onchange=e=>{S.sameMeal=e.target.checked;generate();};
+$("#use-snack").onchange=e=>{S.snack=e.target.checked;generate();};
+$("#skipfish").onchange=e=>{S.skipFish=e.target.checked;generate();};
+$("#altprot").onchange=e=>{S.alt=e.target.value;renderRecipes();renderPlan();renderShop();};
+
+/* ============ EINKAUFSLISTE ============ */
+function buildList(){
+  const sum={};
+  if(!S.plan) return sum;
+  for(let d=0;d<7;d++){
+    const F=factors(d);
+    let fish=0,alt=0;
+    F.forEach(({e,f})=>{e.fish?fish+=f:alt+=f;});
+    dayKeys().forEach(k=>{
+      const r=RM[S.plan[d][k]]; if(!r) return;
+      r.i.forEach(([id,q])=>{
+        if(S.basics && ING[id].basic) return;
+        if(FISH.has(id)){
+          if(fish>0) sum[id]=(sum[id]||0)+q*fish;
+          if(alt>0)  sum[S.alt]=(sum[S.alt]||0)+q*alt;
+        } else sum[id]=(sum[id]||0)+q*(fish+alt);
+      });
+    });
+  }
+  return sum;
+}
+function itemRow(id,qty){
+  const on=S.checked.has(id);
+  const row=document.createElement("label");
+  row.className="item"+(on?" done":"");
+  row.innerHTML=`<input type="checkbox" ${on?"checked":""}>
+    <span class="n">${ING[id].n}</span>
+    ${S.have.has(id)?'<span class="owned">im Vorrat</span>':""}
+    <span class="q">${fmt(qty,ING[id].u)}</span>
+    <span class="price">${euro(priceOf(id,qty))}</span>`;
+  row.querySelector("input").onchange=e=>{
+    e.target.checked?S.checked.add(id):S.checked.delete(id); renderShop();
+  };
+  return row;
+}
+function renderShop(){
+  const sum=buildList(), box=$("#shop"); box.innerHTML="";
+  const hide=$("#hide-owned").checked;
+  const byStore=$("#by-store").checked;
+  let ids=Object.keys(sum);
+  if(hide) ids=ids.filter(id=>!S.have.has(id));
+  $("#cnt-shop").textContent=ids.length;
+  if(!ids.length){
+    box.innerHTML='<div class="empty">Noch kein Plan da. Erzeuge zuerst im Reiter „Wochenplan“ eine Woche.</div>';
+    return;
+  }
+  const done=ids.filter(id=>S.checked.has(id)).length;
+  const totalCost=ids.reduce((a,id)=>a+priceOf(id,sum[id]),0);
+  const prog=document.createElement("div"); prog.className="progress";
+  prog.innerHTML=`<strong>${done} von ${ids.length} erledigt</strong>
+    <div class="meter"><i style="width:${Math.round(done/ids.length*100)}%"></i></div>`;
+  box.appendChild(prog);
+
+  const gt=document.createElement("div"); gt.className="grandtotal";
+  gt.innerHTML=`<span>Geschätzte Gesamtsumme</span><b>${euro(totalCost)}</b>`;
+  box.appendChild(gt);
+
+  if(byStore){
+    const stores=[["aldi","Aldi","Trockenwaren, Gemüse, Tiefkühl, Gewürze – hier sparst du am meisten."],
+                  ["marktkauf","Marktkauf","Frisches Fleisch, Fisch und Feinkost – bessere Qualität als beim Discounter."]];
+    stores.forEach(([key,label,note])=>{
+      const list=ids.filter(id=>(PRICE[id]?PRICE[id][1]:"aldi")===key)
+                    .sort((a,b)=>ING[a].n.localeCompare(ING[b].n,"de"));
+      if(!list.length) return;
+      const subtotal=list.reduce((a,id)=>a+priceOf(id,sum[id]),0);
+      const sec=document.createElement("div"); sec.className="storegrp "+key;
+      sec.innerHTML=`<h3>${label} <span class="stotal">${euro(subtotal)}</span></h3><div class="snote">${note}</div>`;
+      list.forEach(id=>sec.appendChild(itemRow(id,sum[id])));
+      box.appendChild(sec);
+    });
+  } else {
+    for(const [key,label] of Object.entries(CATS)){
+      const list=ids.filter(id=>ING[id].c===key).sort((a,b)=>ING[a].n.localeCompare(ING[b].n,"de"));
+      if(!list.length) continue;
+      const sec=document.createElement("div"); sec.className="shop-cat";
+      sec.innerHTML=`<h3>${label}</h3>`;
+      list.forEach(id=>sec.appendChild(itemRow(id,sum[id])));
+      box.appendChild(sec);
+    }
+  }
+}
+$("#reset-check").onclick=()=>{S.checked.clear();renderShop();};
+$("#hide-owned").onchange=renderShop;
+$("#by-store").onchange=renderShop;
+$("#print").onclick=()=>window.print();
+
+/* ============ EIGENES REZEPT ============ */
+let ownRows=[{ing:"haehnchen",q:200}];
+function ownRowsHtml(){
+  const opts=I.map(x=>`<option value="${x.id}">${x.n}</option>`).join("");
+  return ownRows.map((r,i)=>`
+    <div class="row" data-i="${i}">
+      <select class="or-ing">${opts}</select>
+      <input type="number" class="or-q" min="0" step="1" value="${r.q}">
+      <span class="u">${ING[r.ing].u}</span>
+      <button type="button" class="del or-del" ${ownRows.length<=1?"disabled":""}>Entfernen</button>
+    </div>`).join("");
+}
+function renderOwnRows(){
+  $("#own-rows").innerHTML=ownRowsHtml();
+  $$("#own-rows .row").forEach(row=>{
+    const i=+row.dataset.i;
+    const sel=row.querySelector(".or-ing"); sel.value=ownRows[i].ing;
+    sel.onchange=e=>{ownRows[i].ing=e.target.value; renderOwnRows(); updateOwnPreview();};
+    row.querySelector(".or-q").oninput=e=>{ownRows[i].q=Math.max(0,+e.target.value||0); updateOwnPreview();};
+    const del=row.querySelector(".or-del");
+    if(del) del.onclick=()=>{ownRows.splice(i,1); renderOwnRows(); updateOwnPreview();};
+  });
+}
+$("#own-add-row").onclick=()=>{ownRows.push({ing:"reis",q:80}); renderOwnRows(); updateOwnPreview();};
+
+function ownTotals(){
+  const port=Math.max(1,+$("#own-port").value||1);
+  let k=0,p=0,c=0,f=0;
+  ownRows.forEach(r=>{const m=macros(r.ing,r.q); k+=m[0];p+=m[1];c+=m[2];f+=m[3];});
+  return {k:k/port,p:p/port,c:c/port,f:f/port,port};
+}
+function updateOwnPreview(){
+  const t=ownTotals();
+  $("#own-preview").innerHTML=
+    `<span><b>${Math.round(t.k)}</b> kcal/Portion</span>
+     <span>Eiweiß <b>${Math.round(t.p)}</b> g</span>
+     <span>Kohlenhydrate <b>${Math.round(t.c)}</b> g</span>
+     <span>Fett <b>${Math.round(t.f)}</b> g</span>
+     <span>ergibt ${t.port} Portion${t.port===1?"":"en"}</span>`;
+}
+["own-port"].forEach(id=>$("#"+id).oninput=updateOwnPreview);
+
+function renderOwnList(){
+  const box=$("#own-list");
+  if(!CUSTOM.length){box.innerHTML='<div class="empty">Noch keine eigenen Rezepte hinzugefügt.</div>';return;}
+  const T={main:"Hauptgericht",break:"Frühstück",snack:"Snack"};
+  box.innerHTML=CUSTOM.map(r=>`
+    <article class="card">
+      <h4>${r.n}</h4>
+      <div class="meta"><span class="tag">${T[r.t]}</span>${r.prep?'<span class="tag prep">Prep-tauglich</span>':''}<span class="tag">${r.min} Min</span></div>
+      <div class="macros"><span><b>${r.k}</b> kcal</span><span>P <b>${r.p}</b></span><span>KH <b>${r.c}</b></span><span>F <b>${r.f}</b></span></div>
+      <details><summary>Zutaten pro Portion</summary>
+        <ul>${r.i.map(([id,q])=>`<li>${fmt(q,ING[id].u)} ${ING[id].n}</li>`).join("")}</ul>
+      </details>
+    </article>`).join("");
+}
+
+$("#own-save").onclick=()=>{
+  const name=$("#own-name").value.trim();
+  const msg=$("#own-msg");
+  if(!name){msg.textContent="Bitte einen Namen eintragen.";msg.className="hint msg-err";return;}
+  if(!ownRows.length || ownRows.every(r=>r.q<=0)){msg.textContent="Mindestens eine Zutat mit Menge eintragen.";msg.className="hint msg-err";return;}
+  const t=ownTotals();
+  const rid="c"+Date.now();
+  const rec={
+    id:rid, n:name, t:$("#own-type").value, prep:$("#own-prep").checked?1:0,
+    min:Math.max(5,+$("#own-min").value||30),
+    k:Math.round(t.k), p:Math.round(t.p), c:Math.round(t.c), f:Math.round(t.f),
+    i: ownRows.filter(r=>r.q>0).map(r=>[r.ing, r.q/t.port]),
+    s: ($("#own-steps").value.split("\n").map(x=>x.trim()).filter(Boolean)) || ["Nach eigenem Rezept zubereiten."]
+  };
+  CUSTOM.push(rec); RM[rid]=rec;
+  msg.textContent=`„${name}“ hinzugefügt: ${rec.k} kcal, ${rec.p} g Eiweiß pro Portion.`;
+  msg.className="hint msg-ok";
+  $("#own-name").value=""; ownRows=[{ing:"haehnchen",q:200}]; renderOwnRows(); updateOwnPreview();
+  renderOwnList(); renderRecipes();
+};
+
+/* ============ START ============ */
+function refresh(){ $("#cnt-have").textContent=S.have.size; renderRecipes(); }
+renderPantry(); renderEaters(); renderOwnRows(); updateOwnPreview(); renderOwnList(); refresh(); generate();
+</script>
+</body>
+</html>
