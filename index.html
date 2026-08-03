@@ -231,11 +231,12 @@ footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-si
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDSje1hFagR-7dIrDdb8q7GjDmXfes4els",
   authDomain: "wochenplaner-de10d.firebaseapp.com",
+  databaseURL: "https://wochenplaner-de10d-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "wochenplaner-de10d",
   storageBucket: "wochenplaner-de10d.firebasestorage.app",
   messagingSenderId: "796206340248",
@@ -244,20 +245,20 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
+const db = getDatabase(app);
 
 onAuthStateChanged(auth, user=>{
   if(user){
     window.__fbResolve({
       uid:user.uid,
       async save(data){
-        try{ await setDoc(doc(db,"wochenplaner",user.uid), data); }
+        try{ await set(ref(db,"wochenplaner/"+user.uid), data); }
         catch(e){ console.error("Firebase-Speichern fehlgeschlagen:",e); }
       },
       async load(){
         try{
-          const snap=await getDoc(doc(db,"wochenplaner",user.uid));
-          return snap.exists()?snap.data():null;
+          const snap=await get(ref(db,"wochenplaner/"+user.uid));
+          return snap.exists()?snap.val():null;
         }catch(e){ console.error("Firebase-Laden fehlgeschlagen:",e); return null; }
       }
     });
